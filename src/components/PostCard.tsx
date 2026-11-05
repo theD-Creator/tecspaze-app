@@ -13,7 +13,7 @@ import { colors, font, radius } from '@/theme/tokens';
 import { Avatar } from './Avatar';
 import { Pressy } from './Pressy';
 
-type Props = { post: Post; liked: boolean; onLike: (id: string) => void; index: number; featured?: boolean };
+type Props = { post: Post; liked: boolean; likeCount: number; onLike: (id: string) => void; index: number; featured?: boolean };
 
 function LikeButton({ liked, count, onPress }: { liked: boolean; count: number; onPress: () => void }) {
   const s = useSharedValue(1);
@@ -36,9 +36,8 @@ function LikeButton({ liked, count, onPress }: { liked: boolean; count: number; 
   );
 }
 
-export const PostCard = memo(function PostCard({ post, liked, onLike, index, featured }: Props) {
-  // like_count from DB doesn't include our optimistic toggle yet
-  const count = Math.max(0, post.like_count);
+export const PostCard = memo(function PostCard({ post, liked, likeCount, onLike, index, featured }: Props) {
+  const count = likeCount;
   const open = () => router.push({ pathname: '/post/[id]', params: { id: post.id } });
   const role = post.author?.role;
   return (

@@ -64,6 +64,7 @@ export default function Community() {
               post={p}
               index={i}
               liked={feed.liked.has(p.id)}
+              likeCount={feed.likeCount(p)}
               onLike={feed.toggleLike}
               featured={i === 0 && fresh(p.created_at)}
             />

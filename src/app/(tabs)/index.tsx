@@ -67,11 +67,14 @@ export default function Home() {
   const gaugeSize = Math.min(content - 24, 310);
   const live = presence.inside ? Math.max(0, (now - stats.fetchedAt) / 1000) : 0;
   const todaySecs = (stats.data?.day ?? 0) + live;
+  const liveDaily = presence.inside ? Math.max(0, (now - daily.fetchedAt) / 1000) : 0;
+  const weekLive = (r: { total_seconds: number; is_present: boolean }) =>
+    r.total_seconds + (r.is_present ? Math.max(0, (now - week.fetchedAt) / 1000) : 0);
   const sessionSecs = presence.sessionStart ? Math.max(0, (now - presence.sessionStart) / 1000) : 0;
   const myRank = week.data?.find((r) => r.user_id === session?.user.id)?.rank;
   const hereNow = (today.data ?? []).filter((r) => r.is_present);
   const firstName = (profile?.display_name ?? 'du').split(' ')[0];
-  const weekTotal = (daily.data ?? []).reduce((a, r) => a + r.seconds, 0) + live;
+  const weekTotal = (daily.data ?? []).reduce((a, r) => a + r.seconds, 0) + liveDaily;
 
   return (
     <Screen refreshing={refreshing} onRefresh={onRefresh}>
@@ -172,7 +175,7 @@ export default function Home() {
             </View>
           </View>
           {daily.data ? (
-            <WeekChart data={daily.data} width={content - 36} liveExtraToday={live} />
+            <WeekChart data={daily.data} width={content - 36} liveExtraToday={liveDaily} />
           ) : (
             <View style={{ height: 170 }} />
           )}
@@ -231,7 +234,7 @@ export default function Home() {
                   <Txt variant="h3" numberOfLines={1} style={{ flex: 1 }}>
                     {r.display_name}
                   </Txt>
-                  <Txt style={{ fontFamily: 'Doto_900Black', color: colors.text }}>{hours(r.total_seconds)}</Txt>
+                  <Txt style={{ fontFamily: 'Doto_900Black', color: colors.text }}>{hours(weekLive(r))}</Txt>
                 </View>
               ))}
               {week.data && week.data.length === 0 ? (

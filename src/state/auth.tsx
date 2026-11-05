@@ -88,6 +88,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           options: { data: { display_name: displayName.trim() } },
         });
         if (error) return authErrorMessage(error.message);
+        // Supabase hides existing accounts: no error, but a user without identities.
+        if (data.user && (data.user.identities ?? []).length === 0) return 'Diese E-Mail ist schon registriert – melde dich an.';
         if (!data.session) return 'CONFIRM_EMAIL';
         return null;
       },

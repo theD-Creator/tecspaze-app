@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { DEMO, demoDaily, demoLeaderboard, demoPosts, demoStats } from '@/lib/demo';
 import { onPing } from '@/lib/ping';
@@ -17,9 +18,16 @@ function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
     fetchedAt: Date.now(),
   }));
   const fnRef = useRef(fn);
+  const mounted = useRef(true);
   useLayoutEffect(() => {
     fnRef.current = fn;
   });
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   const run = useCallback(
     () =>
@@ -40,7 +48,8 @@ function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
   }, []);
 
   const reload = useCallback(async () => {
-    apply(await run());
+    const r = await run();
+    if (mounted.current) apply(r);
   }, [run, apply]);
 
   useEffect(() => {
@@ -57,25 +66,33 @@ function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
   return { ...state, reload };
 }
 
-/** Debounced reload whenever any time_session row changes (live leaderboard). */
-function useSessionRealtime(channel: string, reload: () => void) {
+/**
+ * Keeps the leaderboard fresh without a realtime fan-out: reload after our own
+ * ping and every minute while the app is in the foreground. Between reloads the
+ * UI ticks present users locally, so it still feels live.
+ */
+const LB_REFRESH_MS = 60_000;
+function useLivePolling(reload: () => void) {
   useEffect(() => {
     let t: ReturnType<typeof setTimeout> | null = null;
     const bump = () => {
       if (t) clearTimeout(t);
-      t = setTimeout(reload, 1200);
+      t = setTimeout(reload, 800);
     };
-    const ch = supabase
-      .channel(channel)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'time_sessions' }, bump)
-      .subscribe();
+    const iv = setInterval(() => {
+      if (AppState.currentState === 'active') reload();
+    }, LB_REFRESH_MS);
     const off = onPing(bump);
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') bump();
+    });
     return () => {
       if (t) clearTimeout(t);
+      clearInterval(iv);
       off();
-      supabase.removeChannel(ch);
+      sub.remove();
     };
-  }, [channel, reload]);
+  }, [reload]);
 }
 
 export function useMyStats() {
@@ -115,7 +132,7 @@ export function useLeaderboard(period: Period, limit = 100) {
     if (error) throw error;
     return (data as LeaderRow[]).map((r) => ({ ...r, total_seconds: Number(r.total_seconds), rank: Number(r.rank) }));
   }, [period, limit]);
-  useSessionRealtime(`lb-${period}-${limit}`, res.reload);
+  useLivePolling(res.reload);
   return res;
 }
 
@@ -124,6 +141,8 @@ const POST_SELECT = '*, author:profiles!posts_user_id_fkey(id, display_name, pho
 export function usePosts() {
   const { session } = useAuth();
   const [liked, setLiked] = useState<Set<string>>(new Set());
+  // what the server's like_count already reflects for this user
+  const [serverLiked, setServerLiked] = useState<Set<string>>(new Set());
   const res = useAsync<Post[]>(async () => {
     if (DEMO) return demoPosts;
     const { data, error } = await supabase.from('posts').select(POST_SELECT).order('created_at', { ascending: false }).limit(50);
@@ -131,7 +150,9 @@ export function usePosts() {
     const uid = session?.user.id;
     if (uid) {
       const { data: likes } = await supabase.from('post_likes').select('post_id').eq('user_id', uid);
-      setLiked(new Set((likes ?? []).map((l) => l.post_id as string)));
+      const ids = new Set((likes ?? []).map((l) => l.post_id as string));
+      setLiked(ids);
+      setServerLiked(ids);
     }
     return data as Post[];
   }, [session?.user.id]);
@@ -174,7 +195,13 @@ export function usePosts() {
     [liked, session?.user.id],
   );
 
-  return { ...res, liked, toggleLike };
+  /** like_count adjusted for our optimistic, not-yet-reloaded toggle */
+  const likeCount = useCallback(
+    (p: Post) => Math.max(0, p.like_count + (liked.has(p.id) ? 1 : 0) - (serverLiked.has(p.id) ? 1 : 0)),
+    [liked, serverLiked],
+  );
+
+  return { ...res, liked, toggleLike, likeCount };
 }
 
 export function usePost(id: string) {

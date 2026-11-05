@@ -34,8 +34,8 @@ type PresenceState = {
 
 const PresenceContext = createContext<PresenceState | null>(null);
 
-// A ping older than this is not trusted to say "inside" (server window is 20 min).
-const STALE_MS = 20 * 60_000;
+// A ping older than this is not trusted to say "inside" (matches the server presence window).
+const STALE_MS = 5 * 60_000;
 
 export function PresenceProvider({ children }: { children: ReactNode }) {
   const { session } = useAuth();
