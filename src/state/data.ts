@@ -160,7 +160,7 @@ export function usePosts() {
   const reloadFeed = res.reload;
   useEffect(() => {
     const ch = supabase
-      .channel('feed')
+      .channel(`feed-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => reloadFeed())
       .subscribe();
     return () => {
