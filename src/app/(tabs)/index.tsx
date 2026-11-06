@@ -23,7 +23,19 @@ import { colors, MAX_WIDTH } from '@/theme/tokens';
 const DAILY_GOAL = 4 * 3600;
 
 function TrackingHint() {
-  const { enabled, permission } = usePresence();
+  const { enabled, permission, viewer } = usePresence();
+  if (viewer) {
+    return (
+      <View style={styles.hint}>
+        <View style={styles.hintIcon}>
+          <Ionicons name="phone-portrait-outline" size={18} color="#2A1300" />
+        </View>
+        <Txt style={{ flex: 1, color: colors.text, fontSize: 14 }}>
+          Am Computer wird keine Zeit erfasst – das macht dein Handy. Hier siehst du alles live.
+        </Txt>
+      </View>
+    );
+  }
   let text: string | null = null;
   if (!enabled) text = 'Auto-Tracking ist pausiert. Tippe hier, um es wieder einzuschalten.';
   else if (permission === 'undetermined' || permission === 'denied')
@@ -153,10 +165,10 @@ export default function Home() {
           onPress={() => router.push('/profile')}
         />
         <ActionTile
-          icon={presence.enabled ? 'locate' : 'pause'}
+          icon={presence.viewer ? 'radio' : presence.enabled ? 'locate' : 'pause'}
           tone="lilac"
-          label={presence.enabled ? 'Check-in' : 'Pausiert'}
-          value={presence.inside ? 'Drin' : 'Prüfen'}
+          label={presence.viewer ? 'Status' : presence.enabled ? 'Check-in' : 'Pausiert'}
+          value={presence.inside ? 'Drin' : presence.viewer ? 'Nicht da' : 'Prüfen'}
           onPress={() => (presence.enabled ? presence.refresh() : router.push('/tracking'))}
         />
       </Animated.View>

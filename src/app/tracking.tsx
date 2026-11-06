@@ -19,6 +19,27 @@ const STEPS: { icon: keyof typeof Ionicons.glyphMap; title: string; text: string
 /** Explains location tracking before asking for permission (Android 11+ needs context). */
 export default function Tracking() {
   const p = usePresence();
+  if (p.viewer) {
+    return (
+      <Screen tabs={false}>
+        <View style={styles.top}>
+          <View style={{ width: 46 }} />
+          <Txt variant="label">Auto-Tracking</Txt>
+          <IconButton icon="close" label="Schließen" onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
+        </View>
+        <Animated.View entering={ZoomIn.springify().damping(12)} style={styles.badge}>
+          <Ionicons name="phone-portrait-outline" size={46} color="#2A1300" />
+        </Animated.View>
+        <Txt variant="title" style={{ textAlign: 'center' }}>
+          Zeit erfasst dein Handy
+        </Txt>
+        <Txt style={{ textAlign: 'center' }}>
+          Computer kennen ihren Standort nur ungefähr. Darum wird hier keine Zeit gemessen. Öffne Tecspaze auf deinem Handy –
+          Timer, Rangliste und Statistik sind überall gleich.
+        </Txt>
+      </Screen>
+    );
+  }
   const done = p.enabled && p.permission === 'always';
   const partial = p.enabled && p.permission === 'foreground';
   const denied = p.permission === 'denied';

@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { AppState, Platform } from 'react-native';
 
 import { DEMO, demoPing } from '@/lib/demo';
+import { CAN_TRACK } from '@/lib/device';
+import { supabase } from '@/lib/supabase';
 import { getLastPing, onPing, type StoredPing } from '@/lib/ping';
 import {
   disableTracking,
@@ -18,6 +20,8 @@ import { useAuth } from './auth';
 import { useNow } from './data';
 
 type PresenceState = {
+  /** desktop browser: no location here, time comes from the phone via the server */
+  viewer: boolean;
   enabled: boolean;
   permission: PermissionLevel;
   ping: StoredPing | null;
@@ -48,6 +52,35 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const stopWatch = useRef<null | (() => void)>(null);
+  // viewer mode: the open session as the server sees it (recorded by another device)
+  const [serverStart, setServerStart] = useState<number | null>(null);
+  const viewer = !CAN_TRACK && !DEMO;
+
+  const loadServerPresence = useCallback(async () => {
+    const { data } = await supabase.rpc('get_my_stats');
+    const cur = (data as { current?: { started_at: string } | null } | null)?.current;
+    return cur?.started_at ? new Date(cur.started_at).getTime() : null;
+  }, []);
+
+  useEffect(() => {
+    if (!viewer || !session) return;
+    let alive = true;
+    const tick = () =>
+      loadServerPresence().then(
+        (t) => alive && setServerStart(t),
+        () => null,
+      );
+    tick();
+    const iv = setInterval(tick, 60_000);
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'active') tick();
+    });
+    return () => {
+      alive = false;
+      clearInterval(iv);
+      sub.remove();
+    };
+  }, [viewer, session, loadServerPresence]);
 
   useEffect(() => onPing(setPing), []);
 
@@ -55,7 +88,7 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
 
   /** Talks to the OS/location service only; state is applied by the caller. */
   const syncTracking = useCallback(async (): Promise<SyncResult | null> => {
-    if (!session || DEMO) return null;
+    if (!session || DEMO || viewer) return null;
     const on = await isTrackingEnabled();
     const level = await getPermissionLevel();
     stopWatch.current?.();
@@ -69,7 +102,7 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       return { on, level, error: e instanceof Error ? e.message : 'Standort nicht verfügbar' };
     }
-  }, [session]);
+  }, [session, viewer]);
 
   const applySync = useCallback((r: SyncResult | null) => {
     if (!r) return;
@@ -94,9 +127,28 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
   }, [syncTracking, applySync]);
 
   const value = useMemo<PresenceState>(() => {
+    if (viewer) {
+      const start = session ? serverStart : null;
+      return {
+        viewer: true,
+        enabled: true,
+        permission: 'foreground',
+        ping: null,
+        inside: start !== null,
+        sessionStart: start,
+        error: null,
+        busy: false,
+        async enable() {},
+        async disable() {},
+        async refresh() {
+          setServerStart(await loadServerPresence().catch(() => null));
+        },
+      };
+    }
     const fresh = ping && now - ping.at < STALE_MS;
     const inside = Boolean(enabled && fresh && ping?.inside && ping.started_at);
     return {
+      viewer: false,
       enabled,
       permission,
       ping,
@@ -139,7 +191,7 @@ export function PresenceProvider({ children }: { children: ReactNode }) {
         }
       },
     };
-  }, [enabled, permission, ping, now, error, busy, ensureRunning]);
+  }, [viewer, session, serverStart, loadServerPresence, enabled, permission, ping, now, error, busy, ensureRunning]);
 
   return <PresenceContext.Provider value={value}>{children}</PresenceContext.Provider>;
 }

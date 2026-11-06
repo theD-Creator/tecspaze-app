@@ -148,26 +148,32 @@ export default function Profile() {
           Zeiterfassung
         </Txt>
         <Glass padding={6}>
-          <Row
-            icon="navigate"
-            label="Auto-Tracking"
-            right={
-              <Switch
-                value={presence.enabled}
-                disabled={presence.busy}
-                onValueChange={(v) => (v ? presence.enable() : presence.disable())}
-                trackColor={{ false: 'rgba(255,255,255,0.15)', true: colors.cyan }}
-                thumbColor="#fff"
-                accessibilityLabel="Auto-Tracking"
+          {presence.viewer ? (
+            <Row icon="phone-portrait-outline" label="Auto-Tracking" value="Nur am Handy" />
+          ) : (
+            <>
+              <Row
+                icon="navigate"
+                label="Auto-Tracking"
+                right={
+                  <Switch
+                    value={presence.enabled}
+                    disabled={presence.busy}
+                    onValueChange={(v) => (v ? presence.enable() : presence.disable())}
+                    trackColor={{ false: 'rgba(255,255,255,0.15)', true: colors.cyan }}
+                    thumbColor="#fff"
+                    accessibilityLabel="Auto-Tracking"
+                  />
+                }
               />
-            }
-          />
-          <Row
-            icon="shield-checkmark-outline"
-            label="Standort-Zugriff"
-            value={PERMISSION_TEXT[presence.permission]}
-            onPress={() => router.push('/tracking')}
-          />
+              <Row
+                icon="shield-checkmark-outline"
+                label="Standort-Zugriff"
+                value={PERMISSION_TEXT[presence.permission]}
+                onPress={() => router.push('/tracking')}
+              />
+            </>
+          )}
           {isGlobalAdmin(profile) ? (
             <Row icon="map-outline" label="Tecspaze-Standort (Admin)" onPress={() => router.push('/admin-space')} />
           ) : null}

@@ -29,8 +29,13 @@ export function Pressy({ children, style, scaleTo = 0.96, haptic = true, onPress
     minWidth: flat.minWidth,
     aspectRatio: flat.aspectRatio,
   };
+  // the outer Pressable already has the width – the inner view just fills it
   const inner: ViewStyle =
-    flat.flex != null || flat.aspectRatio != null ? { ...flat, flex: 1, aspectRatio: undefined, width: '100%' } : flat;
+    flat.flex != null || flat.aspectRatio != null
+      ? { ...flat, flex: 1, aspectRatio: undefined, width: '100%' }
+      : flat.width != null
+        ? { ...flat, width: '100%', minWidth: undefined }
+        : flat;
   const anim = useAnimatedStyle(() => ({ transform: [{ scale: s.value }] }));
   return (
     <Pressable
