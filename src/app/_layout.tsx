@@ -7,6 +7,7 @@ import { View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IntroAnimation } from '@/components/IntroAnimation';
+import { InstallHint } from '@/components/InstallHint';
 import { UpdateBanner } from '@/components/UpdateBanner';
 import { DEMO } from '@/lib/demo';
 import { AuthProvider, useAuth } from '@/state/auth';
@@ -54,6 +55,7 @@ function RootStack() {
         </Stack.Protected>
       </Stack>
       <UpdateBanner />
+      {signedIn ? <InstallHint /> : null}
       {intro ? <IntroAnimation onDone={endIntro} /> : null}
     </View>
   );

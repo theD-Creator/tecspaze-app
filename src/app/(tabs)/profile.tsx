@@ -77,6 +77,8 @@ export default function Profile() {
   const rank = all.data?.find((r) => r.user_id === session?.user.id)?.rank;
 
   const checkUpdate = async () => {
+    // the web app always loads the newest version – a reload is the update
+    if (Platform.OS === 'web' && !__DEV__) return window.location.reload();
     if (__DEV__ || !Updates.isEnabled) return setUpdateMsg('Live-Updates sind nur in der installierten App aktiv.');
     setChecking(true);
     try {
