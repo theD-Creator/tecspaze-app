@@ -6,6 +6,18 @@ export type ChangelogEntry = { version: string; date: string; title: string; ite
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-11-07',
+    title: 'Support-Chat & Mitteilungen',
+    items: [
+      'Neu: Support-Chat – schreib dem Team direkt (Profil → Support-Chat)',
+      'Antwortet das Team auf deinen Bug oder deine Idee, öffnet sich sofort der Support-Modus',
+      'Neu: Mitteilungen – Antworten vom Team und Updates landen in der Glocke auf dem Start-Screen',
+      'Mitteilung, wenn deine Zeit im Tecspaze startet oder stoppt (im Profil abschaltbar)',
+      'Push-Mitteilungen auf dem Sperrbildschirm mit der neuen App-Version',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-11-07',
     title: 'Euer Feedback umgesetzt',

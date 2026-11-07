@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { notifyTrackingChange } from './notify';
 import { supabase } from './supabase';
 import type { PingResult } from './types';
 
@@ -72,6 +73,8 @@ export async function sendPing(
       // storage is a cache only
     }
     listeners.forEach((l) => l(stored));
+    // timer started or stopped → system notification (muted while the app is open)
+    if (prev && prev.inside !== stored.inside) void notifyTrackingChange(stored.inside, stored.space_name);
     return stored;
   })();
 

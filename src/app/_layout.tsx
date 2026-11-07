@@ -9,11 +9,13 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IntroAnimation } from '@/components/IntroAnimation';
 import { InstallHint } from '@/components/InstallHint';
+import { SupportPopup } from '@/components/SupportPopup';
 import { UpdateBanner } from '@/components/UpdateBanner';
 import { WhatsNew } from '@/components/WhatsNew';
 import { APP_VERSION } from '@/lib/changelog';
 import { DEMO } from '@/lib/demo';
 import { AuthProvider, useAuth } from '@/state/auth';
+import { InboxProvider } from '@/state/inbox';
 import { MotionProvider, useMotion } from '@/state/motion';
 import { PresenceProvider } from '@/state/presence';
 import { fontAssets } from '@/theme/fonts';
@@ -70,6 +72,9 @@ function RootStack() {
           <Stack.Screen name="feedback" options={{ animation: anim('slide_from_right') }} />
           <Stack.Screen name="feedback-new" options={{ presentation: 'modal', animation: anim('slide_from_bottom') }} />
           <Stack.Screen name="changelog" options={{ animation: anim('slide_from_right') }} />
+          <Stack.Screen name="notifications" options={{ animation: anim('slide_from_right') }} />
+          <Stack.Screen name="support/index" options={{ animation: anim('slide_from_right') }} />
+          <Stack.Screen name="support/[id]" options={{ animation: anim('slide_from_right') }} />
         </Stack.Protected>
         <Stack.Protected guard={!signedIn}>
           <Stack.Screen name="get-started" options={{ animation: anim('fade') }} />
@@ -79,6 +84,7 @@ function RootStack() {
       <UpdateBanner />
       {signedIn ? <InstallHint /> : null}
       {signedIn && !intro ? <WhatsNew /> : null}
+      {signedIn && !intro ? <SupportPopup /> : null}
       {intro ? <IntroAnimation onDone={endIntro} /> : null}
     </View>
   );
@@ -88,11 +94,13 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <PresenceProvider>
-          <MotionProvider>
-            <RootStack />
-          </MotionProvider>
-        </PresenceProvider>
+        <InboxProvider>
+          <PresenceProvider>
+            <MotionProvider>
+              <RootStack />
+            </MotionProvider>
+          </PresenceProvider>
+        </InboxProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

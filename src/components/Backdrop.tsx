@@ -44,7 +44,8 @@ export function Backdrop({ intensity = 1 }: { intensity?: number }) {
   const { width, height } = useWindowDimensions();
   const s = Math.max(width, 380);
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    // clipped: the drifting blobs are larger than the screen (no sideways scroll on web)
+    <View style={[StyleSheet.absoluteFill, { overflow: 'hidden' }]} pointerEvents="none">
       <LinearGradient colors={gradients.night} style={StyleSheet.absoluteFill} />
       <View style={[StyleSheet.absoluteFill, { opacity: intensity }]}>
         <Blob color={colors.magenta} size={s * 1.1} x={-s * 0.45} y={-s * 0.55} dx={s * 0.12} dy={s * 0.08} duration={11000} />

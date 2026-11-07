@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { memo, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
@@ -91,6 +92,22 @@ export const FeedbackCard = memo(function FeedbackCard({ item, index, now, mine,
             <Text style={styles.author} numberOfLines={1}>
               {mine ? 'Du' : (item.author_name ?? 'Mitglied')}
             </Text>
+            {mine ? (
+              <Pressy
+                onPress={() =>
+                  router.push({
+                    pathname: '/support/[id]',
+                    params: { id: 'new', feedback: item.id, subject: item.title },
+                  })
+                }
+                accessibilityLabel={`Chat mit dem Team zu: ${item.title}`}
+                style={styles.chat}
+                scaleTo={0.94}
+              >
+                <Ionicons name="chatbubbles-outline" size={13} color={colors.mangoSoft} />
+                <Text style={styles.chatText}>Chat</Text>
+              </Pressy>
+            ) : null}
             {mine && onDelete ? (
               <Pressy onPress={() => onDelete(item)} accessibilityLabel={`Eintrag löschen: ${item.title}`} style={styles.trash}>
                 <Ionicons name="trash-outline" size={15} color={colors.textMuted} />
@@ -142,4 +159,14 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
   author: { flex: 1, fontFamily: font.body, fontSize: 12, color: colors.textMuted },
   trash: { padding: 4 },
+  chat: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 99,
+    backgroundColor: 'rgba(240,150,45,0.14)',
+  },
+  chatText: { fontFamily: font.label, fontSize: 11.5, color: colors.mangoSoft },
 });

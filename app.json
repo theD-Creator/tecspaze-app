@@ -77,6 +77,13 @@
           "cameraPermission": false
         }
       ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F0962D"
+        }
+      ],
       "expo-updates"
     ],
     "experiments": {

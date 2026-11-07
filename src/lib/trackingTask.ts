@@ -2,6 +2,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
+import { checkInboxInBackground } from './notify';
 import { sendPing } from './ping';
 
 export const LOCATION_TASK = 'tecspaze-presence';
@@ -25,5 +26,7 @@ if (Platform.OS !== 'web') {
     } catch (e) {
       console.warn('[tracking] ping failed', e);
     }
+    // phones without push: show new team replies / updates from here
+    await checkInboxInBackground();
   });
 }

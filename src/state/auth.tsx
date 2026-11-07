@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { DEMO, demoProfile } from '@/lib/demo';
+import { disablePushForAccount } from '@/lib/notify';
 import { supabase } from '@/lib/supabase';
 import { teardownTracking } from '@/lib/tracking';
 import type { Profile } from '@/lib/types';
@@ -99,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async signOut() {
         await teardownTracking();
+        await disablePushForAccount();
         await supabase.auth.signOut();
       },
       async refreshProfile() {

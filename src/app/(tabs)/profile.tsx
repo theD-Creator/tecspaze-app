@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Application from 'expo-application';
 import { router } from 'expo-router';
 import * as Updates from 'expo-updates';
-import { useState, type ComponentProps } from 'react';
+import { useEffect, useState, type ComponentProps } from 'react';
 import { Alert, Platform, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -14,8 +14,10 @@ import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
 import { APP_VERSION } from '@/lib/changelog';
 import { hours, ROLE_LABEL } from '@/lib/format';
+import { notificationsAvailable, setTrackingNotifications, trackingNotificationsOn } from '@/lib/notify';
 import { isGlobalAdmin, useAuth } from '@/state/auth';
 import { useLeaderboard, useMyStats } from '@/state/data';
+import { useInbox } from '@/state/inbox';
 import { useMotion } from '@/state/motion';
 import { usePresence } from '@/state/presence';
 import { colors, font } from '@/theme/tokens';
@@ -98,6 +100,19 @@ export default function Profile() {
   };
 
   const motion = useMotion();
+  const inbox = useInbox();
+  const [trackNotify, setTrackNotify] = useState(true);
+  useEffect(() => {
+    trackingNotificationsOn().then(setTrackNotify).catch(() => null);
+  }, []);
+  const pushLabel =
+    inbox.push === 'push' || inbox.push === 'local'
+      ? 'An'
+      : inbox.push === 'denied'
+        ? 'Aus'
+        : Platform.OS === 'web'
+          ? 'Nur in der App'
+          : 'App-Update nötig';
   // shown version follows the changelog (bumps with every live update); build = native APK
   const build = `Build ${Application.nativeApplicationVersion ?? 'web'}${Updates.updateId ? ` · ${Updates.updateId.slice(0, 7)}` : ''}`;
 
@@ -180,6 +195,58 @@ export default function Profile() {
           )}
           {isGlobalAdmin(profile) ? (
             <Row icon="map-outline" label="Tecspaze-Standort (Admin)" onPress={() => router.push('/admin-space')} />
+          ) : null}
+        </Glass>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(200).duration(500)}>
+        <Txt variant="label" style={styles.section}>
+          Support & Mitteilungen
+        </Txt>
+        <Glass padding={6}>
+          <Row
+            icon="headset-outline"
+            label="Support-Chat"
+            value={inbox.supportUnread > 0 ? `${inbox.supportUnread} neu` : undefined}
+            onPress={() => router.push('/support')}
+          />
+          <Row
+            icon="notifications-outline"
+            label="Mitteilungen"
+            value={inbox.unread > 0 ? `${inbox.unread} neu` : undefined}
+            onPress={() => router.push('/notifications')}
+          />
+          {Platform.OS !== 'web' ? (
+            <Row
+              icon="phone-portrait-outline"
+              label="Push-Mitteilungen"
+              value={pushLabel}
+              onPress={
+                inbox.push === 'denied' || inbox.push === null
+                  ? () => {
+                      void inbox.enablePush();
+                    }
+                  : undefined
+              }
+            />
+          ) : null}
+          {notificationsAvailable() && !presence.viewer ? (
+            <Row
+              icon="timer-outline"
+              label="Tracking-Mitteilungen"
+              right={
+                <Switch
+                  value={trackNotify}
+                  onValueChange={(v) => {
+                    setTrackNotify(v);
+                    void setTrackingNotifications(v);
+                  }}
+                  trackColor={{ false: 'rgba(255,255,255,0.15)', true: colors.cyan }}
+                  thumbColor="#fff"
+                  accessibilityLabel="Mitteilung, wenn die Zeit startet oder stoppt"
+                />
+              }
+            />
           ) : null}
         </Glass>
       </Animated.View>

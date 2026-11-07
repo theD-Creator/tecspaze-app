@@ -16,6 +16,7 @@ import { Txt } from '@/components/Txt';
 import { WeekChart } from '@/components/WeekChart';
 import { distanceLabel, duration, greeting, hours } from '@/lib/format';
 import { useAuth } from '@/state/auth';
+import { useInbox } from '@/state/inbox';
 import { useLeaderboard, useMyDaily, useMyStats, useNow } from '@/state/data';
 import { usePresence } from '@/state/presence';
 import { colors, MAX_WIDTH } from '@/theme/tokens';
@@ -61,6 +62,7 @@ export default function Home() {
   const { width } = useWindowDimensions();
   const { profile, session } = useAuth();
   const presence = usePresence();
+  const inbox = useInbox();
   const stats = useMyStats();
   const daily = useMyDaily(7);
   const today = useLeaderboard('day', 50);
@@ -108,7 +110,12 @@ export default function Home() {
             {greeting()}
           </Txt>
         </View>
-        <IconButton icon="notifications-outline" label="Community-Neuigkeiten" onPress={() => router.push('/community')} badge />
+        <IconButton
+          icon="notifications-outline"
+          label={`Mitteilungen${inbox.unread + inbox.supportUnread > 0 ? `, ${inbox.unread + inbox.supportUnread} neu` : ''}`}
+          onPress={() => router.push('/notifications')}
+          badge={inbox.unread + inbox.supportUnread > 0}
+        />
       </Animated.View>
 
       <TrackingHint />
