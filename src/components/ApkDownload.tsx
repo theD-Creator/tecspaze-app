@@ -11,6 +11,9 @@ import { Button } from './Buttons';
 import { Glass } from './Glass';
 import { Txt } from './Txt';
 
+/** Fallback when the direct download doesn't start (user app: public release page). */
+const RELEASE_PAGE: string | null = 'https://github.com/theD-Creator/tecspaze-app/releases/latest';
+
 type Release = { version: string; version_code: number; url: string; notes: string | null };
 
 async function fetchRelease(app: string): Promise<Release | null> {
@@ -48,6 +51,7 @@ export function useLatestApk(app: string) {
  */
 export function ApkDownload({ app, onlyIfNewer = false }: { app: string; onlyIfNewer?: boolean }) {
   const { release, newer } = useLatestApk(app);
+  const [state, setState] = useState<'idle' | 'started' | 'failed'>('idle');
   if (!release || Platform.OS === 'ios' || (onlyIfNewer && !newer)) return null;
   const subtitle = newer
     ? 'Neue App-Version – tippen zum Herunterladen und Installieren.'
@@ -76,9 +80,30 @@ export function ApkDownload({ app, onlyIfNewer = false }: { app: string; onlyIfN
           icon="download-outline"
           variant={newer ? 'mango' : 'glass'}
           compact
-          onPress={() => Linking.openURL(release.url).catch(() => null)}
+          onPress={() => {
+            setState('started');
+            // the browser takes over the download; the app itself stays usable
+            Linking.openURL(release.url).catch(() => setState('failed'));
+          }}
         />
       </View>
+      {state !== 'idle' ? (
+        <Txt variant="small" style={{ marginTop: 10, textAlign: 'center' }}>
+          {state === 'failed'
+            ? 'Der Download konnte nicht geöffnet werden. Öffne den Link unten im Browser.'
+            : 'Download läuft im Browser – danach in den Downloads auf „tecspaze.apk“ tippen und installieren.'}
+        </Txt>
+      ) : null}
+      {state !== 'idle' && RELEASE_PAGE ? (
+        <Txt
+          variant="small"
+          style={{ marginTop: 6, textAlign: 'center', color: colors.cyan }}
+          onPress={() => Linking.openURL(RELEASE_PAGE).catch(() => null)}
+          accessibilityRole="link"
+        >
+          Download-Seite öffnen
+        </Txt>
+      ) : null}
     </Glass>
   );
 }

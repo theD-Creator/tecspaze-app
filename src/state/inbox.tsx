@@ -119,6 +119,9 @@ export function InboxProvider({ children }: { children: ReactNode }) {
     if (!uid || DEMO) return;
     let alive = true;
     (async () => {
+      // wait until startup (location prompt, intro, popups) is done – two permission dialogs at once can hang Android
+      await new Promise((r) => setTimeout(r, 6000));
+      if (!alive) return;
       await configureNotifications();
       const asked = await AsyncStorage.getItem(ASKED_KEY).catch(() => '1');
       const state = await enableNotifications(!asked);
