@@ -180,6 +180,25 @@ export default function Profile() {
         </Glass>
       </Animated.View>
 
+      <Animated.View entering={FadeInDown.delay(210).duration(500)}>
+        <Txt variant="label" style={styles.section}>
+          Feedback
+        </Txt>
+        <Glass padding={6}>
+          <Row icon="bulb-outline" label="Ideen & Bugs ansehen" onPress={() => router.push('/feedback')} />
+          <Row
+            icon="sparkles-outline"
+            label="Feature wünschen"
+            onPress={() => router.push({ pathname: '/feedback-new', params: { kind: 'feature' } })}
+          />
+          <Row
+            icon="bug-outline"
+            label="Bug melden"
+            onPress={() => router.push({ pathname: '/feedback-new', params: { kind: 'bug' } })}
+          />
+        </Glass>
+      </Animated.View>
+
       <Animated.View entering={FadeInDown.delay(240).duration(500)}>
         <Txt variant="label" style={styles.section}>
           App

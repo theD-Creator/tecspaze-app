@@ -48,6 +48,8 @@ function RootStack() {
           <Stack.Screen name="tracking" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
           <Stack.Screen name="admin-space" options={{ animation: 'slide_from_right' }} />
           <Stack.Screen name="edit-profile" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+          <Stack.Screen name="feedback" options={{ animation: 'slide_from_right' }} />
+          <Stack.Screen name="feedback-new" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
         </Stack.Protected>
         <Stack.Protected guard={!signedIn}>
           <Stack.Screen name="get-started" options={{ animation: 'fade' }} />

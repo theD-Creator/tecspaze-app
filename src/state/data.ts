@@ -10,7 +10,7 @@ import { useAuth } from './auth';
 
 type Async<T> = { data: T | null; loading: boolean; error: string | null; fetchedAt: number; reload: () => Promise<void> };
 
-function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
+export function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
   const [state, setState] = useState<Omit<Async<T>, 'reload'>>(() => ({
     data: null,
     loading: true,
