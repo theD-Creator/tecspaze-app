@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 
 import { DEMO, demoProfile } from '@/lib/demo';
 import { disablePushForAccount } from '@/lib/notify';
+import { useForegroundRefresh } from '@/lib/refresh';
 import { supabase } from '@/lib/supabase';
 import { teardownTracking } from '@/lib/tracking';
 import type { Profile } from '@/lib/types';
@@ -69,6 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sub.subscription.unsubscribe();
     };
   }, [loadProfile]);
+
+  // role / ban status changed by an admin show up within 5 min (or right after returning to the app)
+  const uid = session?.user.id;
+  const reloadOwnProfile = useCallback(() => loadProfile(uid), [loadProfile, uid]);
+  useForegroundRefresh(reloadOwnProfile, Boolean(uid) && !DEMO);
 
   const value = useMemo<AuthState>(
     () => ({

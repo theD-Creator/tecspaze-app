@@ -3,6 +3,7 @@ import { AppState } from 'react-native';
 
 import { DEMO, demoDaily, demoLeaderboard, demoPosts, demoStats } from '@/lib/demo';
 import { onPing } from '@/lib/ping';
+import { useForegroundRefresh } from '@/lib/refresh';
 import { supabase } from '@/lib/supabase';
 import type { Comment, DailyRow, LeaderRow, MyStats, Period, Post } from '@/lib/types';
 
@@ -62,6 +63,8 @@ export function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): Async<T> {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- callers pass their own dependency list
   }, deps);
+  // every list/stat reloads every 5 min and after returning to the app
+  useForegroundRefresh(reload);
 
   return { ...state, reload };
 }

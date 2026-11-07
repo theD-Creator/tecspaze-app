@@ -6,6 +6,7 @@ import { useEffect, useState, type ComponentProps } from 'react';
 import { Alert, Platform, StyleSheet, Switch, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
+import { ApkDownload } from '@/components/ApkDownload';
 import { Avatar } from '@/components/Avatar';
 import { Button } from '@/components/Buttons';
 import { Glass } from '@/components/Glass';
@@ -303,6 +304,9 @@ export default function Profile() {
             {updateMsg}
           </Txt>
         ) : null}
+        <View style={{ marginTop: 12 }}>
+          <ApkDownload app="tecspaze" />
+        </View>
       </Animated.View>
 
       <Button

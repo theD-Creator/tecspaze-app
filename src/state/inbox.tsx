@@ -13,6 +13,7 @@ import {
   type PushState,
 } from '@/lib/notify';
 import { prependUnique, shouldPopUp, type AppNotification } from '@/lib/support';
+import { useForegroundRefresh } from '@/lib/refresh';
 import { supabase } from '@/lib/supabase';
 
 import { useAuth } from './auth';
@@ -150,6 +151,8 @@ export function InboxProvider({ children }: { children: ReactNode }) {
     );
     return () => sub.remove();
   }, [uid]);
+
+  useForegroundRefresh(reload, Boolean(uid));
 
   const markAllRead = useCallback(async () => {
     setItems((list) => list.map((x) => (x.read_at ? x : { ...x, read_at: new Date().toISOString() })));

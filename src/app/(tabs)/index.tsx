@@ -5,6 +5,7 @@ import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ActionTile } from '@/components/ActionTile';
+import { ApkDownload } from '@/components/ApkDownload';
 import { Avatar } from '@/components/Avatar';
 import { IconButton } from '@/components/Buttons';
 import { Glass } from '@/components/Glass';
@@ -21,7 +22,8 @@ import { useLeaderboard, useMyDaily, useMyStats, useNow } from '@/state/data';
 import { usePresence } from '@/state/presence';
 import { colors, MAX_WIDTH } from '@/theme/tokens';
 
-const DAILY_GOAL = 4 * 3600;
+// daily goal: 90 minutes in the Tecspaze
+const DAILY_GOAL = 90 * 60;
 
 function TrackingHint() {
   const { enabled, permission, viewer } = usePresence();
@@ -119,6 +121,7 @@ export default function Home() {
       </Animated.View>
 
       <TrackingHint />
+      <ApkDownload app="tecspaze" onlyIfNewer />
 
       <Animated.View entering={FadeInDown.delay(80).duration(600)}>
         <Glass padding={0} radiusSize={32} strong>
