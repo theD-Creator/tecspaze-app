@@ -6,6 +6,16 @@ export type ChangelogEntry = { version: string; date: string; title: string; ite
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.1',
+    date: '2026-11-07',
+    title: 'Tagesziel & App-Download',
+    items: [
+      'Neues Tagesziel: 90 Minuten im Tecspaze',
+      'Neue App-Versionen (APK) lädst du jetzt mit einem Tipp direkt in der App herunter',
+      'Deine Daten laden sich alle 5 Minuten und beim Zurückkehren in die App automatisch neu',
+    ],
+  },
+  {
     version: '1.4.0',
     date: '2026-11-07',
     title: 'Support-Chat & Mitteilungen',
