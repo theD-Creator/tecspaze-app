@@ -2,14 +2,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, {
-  FadeInDown,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withDelay,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withDelay, withSpring } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 
 import { hours } from '@/lib/format';
 import type { LeaderRow } from '@/lib/types';

@@ -12,9 +12,11 @@ import { Glass } from '@/components/Glass';
 import { Pressy } from '@/components/Pressy';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
+import { APP_VERSION } from '@/lib/changelog';
 import { hours, ROLE_LABEL } from '@/lib/format';
 import { isGlobalAdmin, useAuth } from '@/state/auth';
 import { useLeaderboard, useMyStats } from '@/state/data';
+import { useMotion } from '@/state/motion';
 import { usePresence } from '@/state/presence';
 import { colors, font } from '@/theme/tokens';
 
@@ -95,7 +97,9 @@ export default function Profile() {
     }
   };
 
-  const version = `${Application.nativeApplicationVersion ?? '1.0.0'}${Updates.updateId ? ` · ${Updates.updateId.slice(0, 7)}` : ''}`;
+  const motion = useMotion();
+  // shown version follows the changelog (bumps with every live update); build = native APK
+  const build = `Build ${Application.nativeApplicationVersion ?? 'web'}${Updates.updateId ? ` · ${Updates.updateId.slice(0, 7)}` : ''}`;
 
   return (
     <Screen>
@@ -205,7 +209,26 @@ export default function Profile() {
         </Txt>
         <Glass padding={6}>
           <Row icon="cloud-download-outline" label={checking ? 'Suche Updates…' : 'Nach Updates suchen'} onPress={checkUpdate} />
-          <Row icon="information-circle-outline" label="Version" value={version} />
+          <Row
+            icon="sparkles-outline"
+            label="Was ist neu"
+            value={`Version ${APP_VERSION}`}
+            onPress={() => router.push('/changelog')}
+          />
+          <Row
+            icon="pulse-outline"
+            label="Weniger Animationen"
+            right={
+              <Switch
+                value={motion.preferReduced}
+                onValueChange={motion.setPreferReduced}
+                trackColor={{ false: 'rgba(255,255,255,0.15)', true: colors.cyan }}
+                thumbColor="#fff"
+                accessibilityLabel="Weniger Animationen"
+              />
+            }
+          />
+          <Row icon="information-circle-outline" label="Version" value={`${APP_VERSION} · ${build}`} />
           <Row icon="mail-outline" label="Konto" value={profile?.email ?? session?.user.email ?? ''} />
         </Glass>
         {updateMsg ? (

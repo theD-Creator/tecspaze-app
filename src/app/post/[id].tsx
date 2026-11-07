@@ -11,6 +11,7 @@ import { Glass } from '@/components/Glass';
 import { Pressy } from '@/components/Pressy';
 import { Screen } from '@/components/Screen';
 import { Txt } from '@/components/Txt';
+import { revealFocusedInput } from '@/lib/keyboard';
 import { relativeTime, ROLE_LABEL } from '@/lib/format';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/state/auth';
@@ -81,6 +82,7 @@ export default function PostDetail() {
             <Glass padding={8} radiusSize={26}>
               <View style={styles.composer}>
                 <TextInput
+                  onFocus={revealFocusedInput}
                   value={text}
                   onChangeText={setText}
                   placeholder="Schreib etwas Nettes…"

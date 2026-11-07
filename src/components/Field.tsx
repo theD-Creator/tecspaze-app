@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { forwardRef, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View, type TextInputInstance, type TextInputProps } from 'react-native';
 
+import { revealFocusedInput } from '@/lib/keyboard';
 import { colors, font, radius } from '@/theme/tokens';
 
 import { Txt } from './Txt';
@@ -28,6 +29,7 @@ export const Field = forwardRef<TextInputInstance, Props>(function Field(
           {...rest}
           onFocus={(e) => {
             setFocus(true);
+            revealFocusedInput();
             onFocus?.(e);
           }}
           onBlur={(e) => {

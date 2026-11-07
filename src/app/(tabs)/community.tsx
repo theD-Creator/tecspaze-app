@@ -8,6 +8,7 @@ import { Glass } from '@/components/Glass';
 import { Logo } from '@/components/Logo';
 import { PostCard } from '@/components/PostCard';
 import { Screen } from '@/components/Screen';
+import { Emoji } from '@/components/Emoji';
 import { Txt } from '@/components/Txt';
 import { useNow, usePosts } from '@/state/data';
 import { colors } from '@/theme/tokens';
@@ -51,7 +52,7 @@ export default function Community() {
       ) : posts.length === 0 ? (
         <Glass>
           <View style={{ alignItems: 'center', gap: 10, paddingVertical: 24 }}>
-            <Txt style={{ fontSize: 44 }}>📣</Txt>
+            <Emoji size={44}>📣</Emoji>
             <Txt variant="h2">Bald geht’s los</Txt>
             <Txt style={{ textAlign: 'center' }}>Hier erscheinen Neuigkeiten und Events vom Tecspaze-Team.</Txt>
           </View>

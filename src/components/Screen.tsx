@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useKeyboardAwareScroll } from '@/lib/keyboard';
 import { colors, MAX_WIDTH, TAB_BAR_SPACE } from '@/theme/tokens';
 
 import { Backdrop } from './Backdrop';
@@ -17,12 +18,20 @@ type Props = {
 
 export function Screen({ children, refreshing = false, onRefresh, tabs = true, scroll = true }: Props) {
   const insets = useSafeAreaInsets();
-  const pad = { paddingTop: insets.top + 12, paddingBottom: (tabs ? TAB_BAR_SPACE : 24) + insets.bottom };
+  const { scrollRef, onScroll, extraBottom } = useKeyboardAwareScroll();
+  const pad = {
+    paddingTop: insets.top + 12,
+    paddingBottom: (tabs ? TAB_BAR_SPACE : 24) + insets.bottom + extraBottom,
+  };
   return (
     <View style={styles.root}>
       <Backdrop />
       {scroll ? (
         <ScrollView
+          ref={scrollRef}
+          onScroll={onScroll}
+          scrollEventThrottle={32}
+          keyboardDismissMode="interactive"
           contentContainerStyle={[styles.content, pad]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

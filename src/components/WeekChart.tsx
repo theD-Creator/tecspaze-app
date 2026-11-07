@@ -1,6 +1,8 @@
 import { useEffect, useMemo } from 'react';
 import { View } from 'react-native';
-import Animated, { Easing, useAnimatedProps, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedProps, useSharedValue, withTiming } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 import Svg, { Circle, Defs, LinearGradient, Path, Rect, Stop, Line, Text as SvgText } from 'react-native-svg';
 
 import { duration, weekdayShort } from '@/lib/format';

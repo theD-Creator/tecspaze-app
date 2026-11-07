@@ -10,6 +10,7 @@ import { LiveDot } from '@/components/LiveDot';
 import { Podium } from '@/components/Podium';
 import { Screen } from '@/components/Screen';
 import { Segmented } from '@/components/Segmented';
+import { Emoji } from '@/components/Emoji';
 import { Txt } from '@/components/Txt';
 import { hours } from '@/lib/format';
 import type { LeaderRow, Period } from '@/lib/types';
@@ -96,7 +97,7 @@ export default function Ranking() {
         <Animated.View entering={FadeIn}>
           <Glass>
             <View style={{ alignItems: 'center', gap: 10, paddingVertical: 20 }}>
-              <Txt style={{ fontSize: 44 }}>🏁</Txt>
+              <Emoji size={44}>🏁</Emoji>
               <Txt variant="h2">Noch alles offen!</Txt>
               <Txt style={{ textAlign: 'center' }}>
                 {PERIOD_TEXT[period][0].toUpperCase() + PERIOD_TEXT[period].slice(1)} hat noch niemand Zeit gesammelt. Geh ins

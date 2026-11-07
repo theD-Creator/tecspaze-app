@@ -2,14 +2,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from 'react';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 
 import { colors, gradients } from '@/theme/tokens';
 

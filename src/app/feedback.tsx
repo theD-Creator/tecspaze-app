@@ -11,6 +11,7 @@ import { Glass } from '@/components/Glass';
 import { Pressy } from '@/components/Pressy';
 import { Screen } from '@/components/Screen';
 import { Segmented } from '@/components/Segmented';
+import { Emoji } from '@/components/Emoji';
 import { Txt } from '@/components/Txt';
 import { KIND_META, type Feedback, type FeedbackKind, type FeedbackSort } from '@/lib/feedback';
 import { useAuth } from '@/state/auth';
@@ -121,7 +122,7 @@ export default function FeedbackScreen() {
         ) : feed.list.length === 0 ? (
           <Glass>
             <View style={{ alignItems: 'center', gap: 10, paddingVertical: 16 }}>
-              <Txt style={{ fontSize: 42 }}>{kind === 'bug' ? '🐞' : '💡'}</Txt>
+              <Emoji size={42}>{kind === 'bug' ? '🐞' : '💡'}</Emoji>
               <Txt variant="h2">{kind === 'bug' ? 'Keine Bugs gemeldet' : 'Noch keine Ideen'}</Txt>
               <Txt style={{ textAlign: 'center' }}>
                 {kind === 'bug' ? 'Läuft alles rund? Super! Sonst melde es hier.' : 'Sei die erste Person mit einer Idee.'}

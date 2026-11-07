@@ -1,13 +1,8 @@
 import { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useReducedMotion,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 
 import { colors } from '@/theme/tokens';
 

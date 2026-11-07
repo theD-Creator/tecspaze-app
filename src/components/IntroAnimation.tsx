@@ -4,12 +4,13 @@ import Animated, {
   Easing,
   runOnJS,
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withDelay,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 
 import { colors, font } from '@/theme/tokens';
 

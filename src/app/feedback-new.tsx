@@ -11,7 +11,9 @@ import { Field } from '@/components/Field';
 import { Glass } from '@/components/Glass';
 import { Pressy } from '@/components/Pressy';
 import { Screen } from '@/components/Screen';
+import { Emoji } from '@/components/Emoji';
 import { Txt } from '@/components/Txt';
+import { revealFocusedInput } from '@/lib/keyboard';
 import { feedbackError, type FeedbackKind } from '@/lib/feedback';
 import { createFeedback } from '@/state/feedback';
 import { colors, font, radius } from '@/theme/tokens';
@@ -56,7 +58,7 @@ export default function FeedbackNew() {
     return (
       <Screen tabs={false}>
         <Animated.View entering={ZoomIn.springify().damping(11)} style={styles.doneIcon}>
-          <Txt style={{ fontSize: 48 }}>{kind === 'bug' ? '🐞' : '💡'}</Txt>
+          <Emoji size={48}>{kind === 'bug' ? '🐞' : '💡'}</Emoji>
         </Animated.View>
         <Txt variant="title" style={{ textAlign: 'center' }}>
           Danke dir!
@@ -130,6 +132,7 @@ export default function FeedbackNew() {
                   <Txt variant="small">{body.length}/4000</Txt>
                 </View>
                 <TextInput
+                  onFocus={revealFocusedInput}
                   value={body}
                   onChangeText={setBody}
                   multiline

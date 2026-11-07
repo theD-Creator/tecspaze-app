@@ -5,12 +5,13 @@ import Animated, {
   FadeIn,
   useAnimatedProps,
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withRepeat,
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 import Svg, { Circle, Defs, Line, LinearGradient, Path, RadialGradient, Stop } from 'react-native-svg';
 
 import { clock, duration } from '@/lib/format';

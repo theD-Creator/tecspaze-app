@@ -8,13 +8,14 @@ import Animated, {
   FadeInDown,
   FadeInUp,
   useAnimatedStyle,
-  useReducedMotion,
   useSharedValue,
   withDelay,
   withRepeat,
   withTiming,
   ZoomIn,
 } from 'react-native-reanimated';
+
+import { useReducedMotion } from '@/state/motion';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Backdrop } from '@/components/Backdrop';
